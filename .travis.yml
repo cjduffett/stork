@@ -1,0 +1,17 @@
+
+sudo: false
+language: go
+go:
+- 1.8
+install:
+- go get github.com/Masterminds/glide
+- glide install
+script: go test $(glide novendor)
+services:
+- mongodb
+addons:
+  apt:
+    sources:
+    - mongodb-3.4-precise
+    packages:
+    - mongodb-org-server
