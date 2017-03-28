@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/cjduffett/stork/logger"
 	"github.com/gin-gonic/gin"
@@ -49,9 +50,15 @@ func (s *StorkServer) Run() {
 	s.Session = session.Clone()
 	logger.Info("Connected to MongoDB at " + s.Config.DatabaseHost)
 
+	RegisterMiddleware(s.Engine)
+	RegisterRoutes(s.Engine, s.Config)
+	RegisterSite(s.Engine)
+
 	// Start Stork
-	logger.Info("Starting Stork...")
+	logger.Info("Starting Stork on port " + strings.TrimPrefix(s.Config.ServerPort, ":"))
 	printStork()
+
+	s.Engine.Run(s.Config.ServerPort)
 }
 
 func printStork() {
