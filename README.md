@@ -1,4 +1,4 @@
-# Stork
+# Stork ![build status](https://travis-ci.org/cjduffett/stork.svg?branch=master)
 
 Synthetic patient data as a service, **coming soon!**
 
