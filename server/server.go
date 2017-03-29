@@ -5,7 +5,10 @@ import (
 	"os"
 	"strings"
 
+	"github.com/cjduffett/stork/api"
+	"github.com/cjduffett/stork/config"
 	"github.com/cjduffett/stork/logger"
+	"github.com/cjduffett/stork/site"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/mgo.v2"
 )
@@ -14,11 +17,11 @@ import (
 type StorkServer struct {
 	Engine  *gin.Engine
 	Session *mgo.Session
-	Config  StorkConfig
+	Config  *config.StorkConfig
 }
 
 // NewServer returns a new StorkServer with the specified StorkConfig.
-func NewServer(config StorkConfig) *StorkServer {
+func NewServer(config *config.StorkConfig) *StorkServer {
 
 	if config.Debug {
 		gin.SetMode(gin.DebugMode)
@@ -40,7 +43,7 @@ func (s *StorkServer) Run() {
 	// Connect to MongoDB
 	session, err := mgo.Dial(s.Config.DatabaseHost)
 	if err != nil {
-		logger.Error("Failed to connect to MongoDB")
+		logger.Error("Failed to connect to MongoDB at " + s.Config.DatabaseHost)
 		logger.Error(err.Error())
 		os.Exit(1)
 	}
@@ -51,18 +54,18 @@ func (s *StorkServer) Run() {
 	logger.Info("Connected to MongoDB at " + s.Config.DatabaseHost)
 
 	RegisterMiddleware(s.Engine)
-	RegisterRoutes(s.Engine, s.Config)
-	RegisterSite(s.Engine)
+	api.RegisterRoutes(s.Engine, s.Session, s.Config)
+	site.RegisterSite(s.Engine, s.Session, s.Config)
 
 	// Start Stork
 	logger.Info("Starting Stork on port " + strings.TrimPrefix(s.Config.ServerPort, ":"))
 	printStork()
 
-	s.Engine.Run(s.Config.ServerPort)
+	s.Engine.Run(":" + s.Config.ServerPort)
 }
 
 func printStork() {
-	logger.Info("Stork version " + Version)
+	logger.Info("Stork version " + config.Version)
 	fmt.Println()
 	fmt.Println("                     _.--.")
 	fmt.Println("                 .-\"`_.--.\\   .-.___________")

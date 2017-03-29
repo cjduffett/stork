@@ -1,6 +1,10 @@
 hash: 62915583e19208068234b3ffacb5e2372c23c603453fcfb072516f1a7048a640
-updated: 2017-03-28T15:55:40.443104744-04:00
+updated: 2017-03-28T20:52:21.398860993-04:00
 imports:
+- name: github.com/davecgh/go-spew
+  version: 5215b55f46b2b919f50a1df0eaa5886afe4e3b3d
+  subpackages:
+  - spew
 - name: github.com/gin-gonic/gin
   version: e2212d40c62a98b388a5eb48ecbdcf88534688ba
   subpackages:
@@ -16,6 +20,16 @@ imports:
   version: ee05b128a739a0fb76c7ebd3ae4810c1de808d6d
 - name: github.com/mattn/go-isatty
   version: 281032e84ae07510239465db46bf442aa44b953a
+- name: github.com/pmezard/go-difflib
+  version: 792786c7400a136282c1664665ae0a8db921c6c2
+  subpackages:
+  - difflib
+- name: github.com/stretchr/testify
+  version: f390dcf405f7b83c997eac1b06768bb9f44dec18
+  subpackages:
+  - assert
+  - require
+  - suite
 - name: golang.org/x/net
   version: f315505cf3349909cdf013ea56690da34e96a451
   subpackages:
@@ -30,9 +44,12 @@ imports:
   version: 3f83fa5005286a7fe593b055f0d7771a7dce4655
   subpackages:
   - bson
+  - dbtest
   - internal/json
   - internal/sasl
   - internal/scram
+- name: gopkg.in/tomb.v2
+  version: d5d1b5820637886def9eef33e03a27a9f166942c
 - name: gopkg.in/yaml.v2
   version: a3f3340b5840cee44f372bddb5880fcbc419b46a
 testImports: []
