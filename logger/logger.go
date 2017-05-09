@@ -8,10 +8,12 @@ import "fmt"
 // 2 - Info, Warning, and Debug
 var LogLevel int
 
-var DefaultLevel = 0
-var InfoLevel = 0
-var WarnLevel = 1
-var DebugLevel = 2
+const (
+	DefaultLevel = 0
+	InfoLevel    = 0
+	WarnLevel    = 1
+	DebugLevel   = 2
+)
 
 // Info logs non-critical information to the console at any LogLevel.
 func Info(v ...interface{}) {
