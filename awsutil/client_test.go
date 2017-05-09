@@ -9,7 +9,7 @@ import (
 
 type AWSUtilsTestSuite struct {
 	suite.Suite
-	StorkAWSClient *StorkAWSClient
+	AWSClient *AWSClient
 }
 
 func TestAWSUtilsTestSuite(t *testing.T) {
@@ -20,7 +20,7 @@ func (a *AWSUtilsTestSuite) SetupSuite() {
 	// verbose logging
 	logger.LogLevel = logger.DebugLevel
 
-	a.StorkAWSClient = &StorkAWSClient{
+	a.AWSClient = &AWSClient{
 		Session: nil,
 		S3:      NewS3Mock(),
 		EC2:     EC2Mock{},
@@ -31,11 +31,11 @@ func (a *AWSUtilsTestSuite) TestCreateBucket() {
 	var err error
 
 	// Make a valid request
-	err = a.StorkAWSClient.CreateBucket("test-bucket")
+	err = a.AWSClient.CreateBucket("test-bucket")
 	a.NoError(err)
 
 	// Creating a bucket that already exists should fail
-	err = a.StorkAWSClient.CreateBucket("test-bucket")
+	err = a.AWSClient.CreateBucket("test-bucket")
 	a.Error(err)
 }
 

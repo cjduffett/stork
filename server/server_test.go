@@ -5,7 +5,9 @@ import (
 	"testing"
 
 	"github.com/cjduffett/stork/api"
+	"github.com/cjduffett/stork/awsutil"
 	"github.com/cjduffett/stork/config"
+	"github.com/cjduffett/stork/db"
 	"github.com/cjduffett/stork/testutil"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/suite"
@@ -28,11 +30,23 @@ func (s *ServerTestSuite) SetupSuite() {
 	config := config.DefaultConfig
 	config.DatabaseName = "stork-test"
 	storkServer := NewServer(config)
+
+	// Create a mock MongoDB connection
 	storkServer.Session = s.DB().Session
 
-	// Just testing the middleware in this package. For API and site tests, see the
-	// "api" and "site" packages, respectively.
-	api.RegisterRoutes(storkServer.Engine, storkServer.Session, config)
+	// Register middleware (CORS, etc.)
+	RegisterMiddleware(storkServer.Engine)
+
+	// Create a new Data Access Layer
+	dal := db.NewDataAccessLayer(storkServer.Session, config.DatabaseName)
+
+	// Create a new AWSClient
+	awsClient := awsutil.NewAWSClient(config.Debug)
+
+	// Register API routes and setup controllers
+	api.RegisterRoutes(storkServer.Engine, dal, awsClient)
+
+	// Start the httptest server
 	s.StorkServer = httptest.NewServer(storkServer.Engine)
 }
 

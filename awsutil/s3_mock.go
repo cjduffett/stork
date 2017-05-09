@@ -24,7 +24,7 @@ func NewS3Mock() *S3Mock {
 // CreateBucket mocks the s3.createBucket() operation
 func (s *S3Mock) CreateBucket(in *s3.CreateBucketInput) (*s3.CreateBucketOutput, error) {
 
-	// Add it to the list of known buckets
+	// Add it to the list of known buckets if it doesn't already exist
 	if !s.hasBucket(*in.Bucket) {
 		s.buckets = append(s.buckets, *in.Bucket)
 

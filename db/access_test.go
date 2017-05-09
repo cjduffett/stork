@@ -15,7 +15,7 @@ import (
 type AccessTestSuite struct {
 	testutil.MongoSuite
 	session *mgo.Session
-	DAL     *StorkDAL
+	DAL     *DataAccessLayer
 }
 
 func TestAccessTestSuite(t *testing.T) {
@@ -34,7 +34,7 @@ func (a *AccessTestSuite) SetupSuite() {
 	// Create a new DAL
 	config := config.DefaultConfig
 	config.DatabaseName = "stork-test"
-	a.DAL = NewStorkDAL(a.session, config.DatabaseName)
+	a.DAL = NewDataAccessLayer(a.session, config.DatabaseName)
 }
 
 func (a *AccessTestSuite) TearDownTest() {

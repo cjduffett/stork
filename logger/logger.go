@@ -9,7 +9,7 @@ import "fmt"
 var LogLevel int
 
 const (
-	DefaultLevel = 0
+	DefaultLevel = 1
 	InfoLevel    = 0
 	WarnLevel    = 1
 	DebugLevel   = 2

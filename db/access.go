@@ -12,25 +12,24 @@ const (
 	tasksCollection = "tasks"
 )
 
-// StorkDAL is the Stork data access layer, exposing all methods needed
-// to access saved state in MongoDB.
-type StorkDAL struct {
+// DataAccessLayer exposes all methods needed to access saved state in MongoDB.
+type DataAccessLayer struct {
 	session *mgo.Session
 	dbname  string
 }
 
-// NewStorkDAL creates a new Stork data access layer
-func NewStorkDAL(session *mgo.Session, dbname string) *StorkDAL {
-	logger.Debug("Creating DAL for database ", dbname)
+// NewDataAccessLayer creates a new Stork data access layer
+func NewDataAccessLayer(session *mgo.Session, dbname string) *DataAccessLayer {
+	logger.Debug("Creating Data Access Layer for database ", dbname)
 
-	return &StorkDAL{
+	return &DataAccessLayer{
 		session: session,
 		dbname:  dbname,
 	}
 }
 
 // GetTask retrieves a Task from the database, by ID
-func (s *StorkDAL) GetTask(taskID string) (*Task, error) {
+func (s *DataAccessLayer) GetTask(taskID string) (*Task, error) {
 	worker := s.session.Copy()
 	defer worker.Close()
 
@@ -49,7 +48,7 @@ func (s *StorkDAL) GetTask(taskID string) (*Task, error) {
 
 // GetTasks retrieves all tasks from the database, excluding
 // those that were deleted.
-func (s *StorkDAL) GetTasks() (*TaskList, error) {
+func (s *DataAccessLayer) GetTasks() (*TaskList, error) {
 	worker := s.session.Copy()
 	defer worker.Close()
 
@@ -67,7 +66,7 @@ func (s *StorkDAL) GetTasks() (*TaskList, error) {
 }
 
 // CreateTask adds a new task to the database
-func (s *StorkDAL) CreateTask(task *Task) (string, error) {
+func (s *DataAccessLayer) CreateTask(task *Task) (string, error) {
 	worker := s.session.Copy()
 	defer worker.Close()
 
@@ -87,7 +86,7 @@ func (s *StorkDAL) CreateTask(task *Task) (string, error) {
 }
 
 // UpdateTask updates a task in the database
-func (s *StorkDAL) UpdateTask(task *Task) (*Task, error) {
+func (s *DataAccessLayer) UpdateTask(task *Task) (*Task, error) {
 	if task.ID == "" {
 		// This is an unknown task, error out
 		err := errors.New("Unknown task: no task ID found")
@@ -108,7 +107,7 @@ func (s *StorkDAL) UpdateTask(task *Task) (*Task, error) {
 }
 
 // DeleteTask marks a task in the database as "deleted"
-func (s *StorkDAL) DeleteTask(taskID string) error {
+func (s *DataAccessLayer) DeleteTask(taskID string) error {
 	worker := s.session.Copy()
 	defer worker.Close()
 

@@ -1,26 +1,22 @@
 package api
 
 import (
-	"net/http"
-
 	"github.com/cjduffett/stork/awsutil"
-	"github.com/cjduffett/stork/config"
-	"github.com/cjduffett/stork/logger"
+	"github.com/cjduffett/stork/db"
 	"github.com/gin-gonic/gin"
-	"gopkg.in/mgo.v2"
 )
 
+// APIController implements all Stork API endpoints
 type APIController struct {
-	session   *mgo.Session
-	awsClient *awsutil.StorkAWSClient
-	dbname    string
+	DAL       *db.DataAccessLayer
+	AWSClient *awsutil.AWSClient
 }
 
-func NewAPIController(session *mgo.Session, config *config.StorkConfig) *APIController {
+// NewAPIController returns a pointer to an initialized APIController
+func NewAPIController(dal *db.DataAccessLayer, awsClient *awsutil.AWSClient) *APIController {
 	return &APIController{
-		session:   session,
-		awsClient: awsutil.NewStorkAWSClient(config),
-		dbname:    config.DatabaseName,
+		DAL:       dal,
+		AWSClient: awsClient,
 	}
 }
 
@@ -41,14 +37,6 @@ func (a *APIController) CreateTask(c *gin.Context) {
 	// Save state
 
 	// Return status
-	bucketName, _ := c.GetQuery("bucket")
-	err := a.awsClient.CreateBucket(bucketName)
-	if err != nil {
-		logger.Error(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"msg": "Created bucket " + bucketName})
 }
 
 // GetTasks returns a list of all Stork tasks and their statuses.

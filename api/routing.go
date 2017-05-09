@@ -1,15 +1,15 @@
 package api
 
 import (
-	"github.com/cjduffett/stork/config"
+	"github.com/cjduffett/stork/awsutil"
+	"github.com/cjduffett/stork/db"
 	"github.com/gin-gonic/gin"
-	"gopkg.in/mgo.v2"
 )
 
 // RegisterRoutes registers all Stork API routes. All API routes are served from /stork/api.
-func RegisterRoutes(router *gin.Engine, session *mgo.Session, config *config.StorkConfig) {
+func RegisterRoutes(router *gin.Engine, dal *db.DataAccessLayer, awsClient *awsutil.AWSClient) {
 
-	apic := NewAPIController(session, config)
+	apic := NewAPIController(dal, awsClient)
 
 	// All task routes
 	taskGroup := router.Group("/task")
