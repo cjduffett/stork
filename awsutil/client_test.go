@@ -3,6 +3,7 @@ package awsutil
 import (
 	"testing"
 
+	"github.com/cjduffett/stork/config"
 	"github.com/cjduffett/stork/logger"
 	"github.com/stretchr/testify/suite"
 )
@@ -21,6 +22,7 @@ func (a *AWSUtilsTestSuite) SetupSuite() {
 	logger.LogLevel = logger.DebugLevel
 
 	a.AWSClient = &AWSClient{
+		Config:  config.DefaultConfig,
 		Session: nil,
 		S3:      NewS3Mock(),
 		EC2:     EC2Mock{},

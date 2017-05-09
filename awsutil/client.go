@@ -11,6 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2/ec2iface"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
+	"github.com/cjduffett/stork/config"
 	"github.com/cjduffett/stork/logger"
 )
 
@@ -29,14 +30,14 @@ const (
 // AWSClient contains the initialized clients and interfaces
 // needed for Stork to interact with AWS.
 type AWSClient struct {
-	Config  *aws.Config
+	Config  *config.StorkConfig
 	Session *session.Session
 	S3      s3iface.S3API
 	EC2     ec2iface.EC2API
 }
 
-// NewAWSClient returns a pointer to an initialized StorkAWSClient
-func NewAWSClient(debugMode bool) *AWSClient {
+// NewAWSClient returns a pointer to an initialized AWSClient
+func NewAWSClient(config *config.StorkConfig) *AWSClient {
 
 	// Check that the environment is set
 	required := []string{requiredAccessKeyEnvVar, requiredSecretKeyEnvVar, requiredRegionEnvVar}
@@ -64,7 +65,7 @@ func NewAWSClient(debugMode bool) *AWSClient {
 	logger.Info("Connecting Stork to AWS in region " + region)
 
 	// When debugging, log every request made and its payload
-	if debugMode {
+	if config.Debug {
 		awsSession.Handlers.Send.PushFront(func(r *request.Request) {
 			logger.Debug(fmt.Sprintf(
 				"AWS API: Request: %s/%s, Payload: %s",
@@ -74,6 +75,7 @@ func NewAWSClient(debugMode bool) *AWSClient {
 	}
 
 	return &AWSClient{
+		Config:  config,
 		Session: awsSession,
 		S3:      s3.New(awsSession),
 		EC2:     ec2.New(awsSession),
@@ -114,4 +116,33 @@ func (s *AWSClient) DeleteBucket(name string) error {
 
 	logger.Debug("Deleted bucket " + name)
 	return nil
+}
+
+// DescribeBucket returns the status of an S3 bucket, by name.
+func (s *AWSClient) DescribeBucket(name string) (*BucketStatus, error) {
+	return nil, nil
+}
+
+// StartInstances starts n new Synthea instances with the same configuration.
+func (s *AWSClient) StartInstances(n int, config InstanceConfig) ([]string, error) {
+	// Make a RunInstances request for n instances
+	// returns []Instance
+	// Don't wait for the instances to start/confirm starting
+
+	// Tag these instances
+
+	// Return []InstanceIDs
+	return nil, nil
+}
+
+// TerminateInstances terminates one or more Synthea instances.
+// This may be called after the /done endpoint is pinged, or if
+// an abort request is made.
+func (s *AWSClient) TerminateInstances(instanceIDs []string) error {
+	return nil
+}
+
+// DescribeInstances returns the status of one or more Synthea instances.
+func (s *AWSClient) DescribeInstances(instanceIDs []string) ([]InstanceStatus, error) {
+	return nil, nil
 }

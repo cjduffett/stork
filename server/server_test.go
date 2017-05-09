@@ -41,7 +41,7 @@ func (s *ServerTestSuite) SetupSuite() {
 	dal := db.NewDataAccessLayer(storkServer.Session, config.DatabaseName)
 
 	// Create a new AWSClient
-	awsClient := awsutil.NewAWSClient(config.Debug)
+	awsClient := awsutil.NewAWSClient(config)
 
 	// Register API routes and setup controllers
 	api.RegisterRoutes(storkServer.Engine, dal, awsClient)

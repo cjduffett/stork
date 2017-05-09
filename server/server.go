@@ -61,7 +61,7 @@ func (s *StorkServer) Run() {
 	dal := db.NewDataAccessLayer(s.Session, s.Config.DatabaseName)
 
 	// Create a new AWSClient
-	awsClient := awsutil.NewAWSClient(s.Config.Debug)
+	awsClient := awsutil.NewAWSClient(s.Config)
 
 	// Register API routes and setup controllers
 	api.RegisterRoutes(s.Engine, dal, awsClient)
