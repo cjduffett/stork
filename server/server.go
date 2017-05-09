@@ -8,7 +8,6 @@ import (
 	"github.com/cjduffett/stork/api"
 	"github.com/cjduffett/stork/config"
 	"github.com/cjduffett/stork/logger"
-	"github.com/cjduffett/stork/site"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/mgo.v2"
 )
@@ -55,7 +54,6 @@ func (s *StorkServer) Run() {
 
 	RegisterMiddleware(s.Engine)
 	api.RegisterRoutes(s.Engine, s.Session, s.Config)
-	site.RegisterSite(s.Engine, s.Session, s.Config)
 
 	// Start Stork
 	logger.Info("Starting Stork on port " + strings.TrimPrefix(s.Config.ServerPort, ":"))

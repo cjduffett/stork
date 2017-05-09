@@ -1,7 +1,6 @@
 package server
 
 import (
-	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -20,16 +19,4 @@ func RegisterMiddleware(router *gin.Engine) {
 		Credentials:     true,
 		ValidateHeaders: false,
 	}))
-
-	// Redirects
-	router.GET("/", RedirectRootToUI)
-	router.GET("/stork", RedirectStorkToUI)
-}
-
-func RedirectRootToUI(c *gin.Context) {
-	c.Redirect(http.StatusPermanentRedirect, "/stork/ui")
-}
-
-func RedirectStorkToUI(c *gin.Context) {
-	c.Redirect(http.StatusPermanentRedirect, "/stork/ui")
 }
