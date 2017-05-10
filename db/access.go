@@ -55,7 +55,7 @@ func (s *DataAccessLayer) GetTasks() (*TaskList, error) {
 	logger.Debug("Getting all tasks")
 
 	tasks := []Task{}
-	query := bson.M{"status": bson.M{"$not": bson.RegEx{Pattern: StatusDeleted}}}
+	query := bson.M{"status": bson.M{"$not": bson.RegEx{Pattern: TaskStatusDeleted}}}
 	err := worker.DB(s.dbname).C(tasksCollection).Find(query).All(&tasks)
 
 	if err != nil {
@@ -112,6 +112,6 @@ func (s *DataAccessLayer) DeleteTask(taskID string) error {
 	defer worker.Close()
 
 	logger.Debug("Marking task ", taskID, " as 'deleted'")
-	query := bson.M{"$set": bson.M{"status": StatusDeleted}}
+	query := bson.M{"$set": bson.M{"status": TaskStatusDeleted}}
 	return worker.DB(s.dbname).C(tasksCollection).UpdateId(taskID, query)
 }

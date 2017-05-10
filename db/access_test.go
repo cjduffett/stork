@@ -58,7 +58,7 @@ func (a *AccessTestSuite) TestCreateTask() {
 	// Create a new task
 	task := &Task{
 		ID:          bson.NewObjectId().Hex(),
-		Status:      StatusActive,
+		Status:      TaskStatusActive,
 		InstanceIDs: []string{"abc123", "def456"},
 		BucketName:  "test-bucket",
 		User:        "bob",
@@ -108,7 +108,7 @@ func (a *AccessTestSuite) TestGetTask() {
 	// Create a new task
 	task := &Task{
 		ID:          bson.NewObjectId().Hex(),
-		Status:      StatusActive,
+		Status:      TaskStatusActive,
 		InstanceIDs: []string{"abc123", "def456"},
 		BucketName:  "test-bucket",
 		User:        "bob",
@@ -136,7 +136,7 @@ func (a *AccessTestSuite) TestGetAllTasks() {
 	// Add some tasks to the database
 	task1 := &Task{
 		ID:          bson.NewObjectId().Hex(),
-		Status:      StatusActive,
+		Status:      TaskStatusActive,
 		InstanceIDs: []string{"abc123", "def456"},
 		BucketName:  "test-bucket-1",
 		User:        "bob",
@@ -150,7 +150,7 @@ func (a *AccessTestSuite) TestGetAllTasks() {
 
 	task2 := &Task{
 		ID:          bson.NewObjectId().Hex(),
-		Status:      StatusActive,
+		Status:      TaskStatusActive,
 		InstanceIDs: []string{"abc123", "def456"},
 		BucketName:  "test-bucket-2",
 		User:        "bob",
@@ -169,7 +169,7 @@ func (a *AccessTestSuite) TestGetAllTasks() {
 	a.Len(taskList.Tasks, 2)
 
 	// Now update 1 of the tasks as "deleted"
-	task1.Status = StatusDeleted
+	task1.Status = TaskStatusDeleted
 	_, err = a.DAL.UpdateTask(task1)
 	a.NoError(err)
 
@@ -186,7 +186,7 @@ func (a *AccessTestSuite) TestUpdateTask() {
 	// Create a new task
 	task := &Task{
 		ID:          bson.NewObjectId().Hex(),
-		Status:      StatusActive,
+		Status:      TaskStatusActive,
 		InstanceIDs: []string{"abc123", "def456"},
 		BucketName:  "test-bucket",
 		User:        "bob",
@@ -201,14 +201,14 @@ func (a *AccessTestSuite) TestUpdateTask() {
 
 	// Now update it
 	task.User = "geoff"
-	task.Status = StatusCompleted
+	task.Status = TaskStatusCompleted
 	task.End()
 
 	updatedTask, err := a.DAL.UpdateTask(task)
 	a.NoError(err)
 	a.NotNil(updatedTask)
 
-	a.Equal(StatusCompleted, updatedTask.Status)
+	a.Equal(TaskStatusCompleted, updatedTask.Status)
 	a.Equal("geoff", updatedTask.User)
 	a.NotNil(updatedTask.EndTime)
 
@@ -219,7 +219,7 @@ func (a *AccessTestSuite) TestUpdateTask() {
 	a.NotNil(gotTask)
 
 	a.Equal(taskID, gotTask.ID)
-	a.Equal(StatusCompleted, gotTask.Status)
+	a.Equal(TaskStatusCompleted, gotTask.Status)
 	a.Equal("geoff", gotTask.User)
 	a.NotNil(gotTask.EndTime)
 }
@@ -231,7 +231,7 @@ func (a *AccessTestSuite) TestDeleteTask() {
 	// Create a new task
 	task := &Task{
 		ID:          bson.NewObjectId().Hex(),
-		Status:      StatusActive,
+		Status:      TaskStatusActive,
 		InstanceIDs: []string{"abc123", "def456"},
 		BucketName:  "test-bucket",
 		User:        "bob",
@@ -253,5 +253,5 @@ func (a *AccessTestSuite) TestDeleteTask() {
 	a.NoError(err)
 	a.NotNil(gotTask)
 	a.Equal(taskID, gotTask.ID)
-	a.Equal(StatusDeleted, gotTask.Status)
+	a.Equal(TaskStatusDeleted, gotTask.Status)
 }

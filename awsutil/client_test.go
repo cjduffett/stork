@@ -10,7 +10,6 @@ import (
 
 type AWSUtilsTestSuite struct {
 	suite.Suite
-	AWSClient *AWSClient
 }
 
 func TestAWSUtilsTestSuite(t *testing.T) {
@@ -20,27 +19,43 @@ func TestAWSUtilsTestSuite(t *testing.T) {
 func (a *AWSUtilsTestSuite) SetupSuite() {
 	// verbose logging
 	logger.LogLevel = logger.DebugLevel
-
-	a.AWSClient = &AWSClient{
-		Config:  config.DefaultConfig,
-		Session: nil,
-		S3:      NewS3Mock(),
-		EC2:     EC2Mock{},
-	}
 }
 
 func (a *AWSUtilsTestSuite) TestCreateBucket() {
 	var err error
+	client := newMockAWSClient()
 
 	// Make a valid request
-	err = a.AWSClient.CreateBucket("test-bucket")
+	err = client.CreateBucket("test-bucket")
 	a.NoError(err)
 
 	// Creating a bucket that already exists should fail
-	err = a.AWSClient.CreateBucket("test-bucket")
+	err = client.CreateBucket("test-bucket")
 	a.Error(err)
 }
 
 func (a *AWSUtilsTestSuite) TestDeleteBucket() {
+	var err error
+	client := newMockAWSClient()
 
+	// Create a bucket
+	err = client.CreateBucket("test-bucket")
+	a.NoError(err)
+
+	// Make a valid request to delete that bucket
+	err = client.DeleteBucket("test-bucket")
+	a.NoError(err)
+
+	// Trying to delete a bucket that doesn't exist should fail
+	err = client.DeleteBucket("foo-bucket")
+	a.Error(err)
+}
+
+func newMockAWSClient() *AWSClient {
+	return &AWSClient{
+		Config:  config.DefaultConfig,
+		Session: nil,
+		S3:      NewS3Mock(),
+		EC2:     NewEC2Mock(),
+	}
 }

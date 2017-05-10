@@ -3,11 +3,15 @@ package db
 import "time"
 
 const (
-	StatusActive    = "active"
-	StatusCompleted = "completed"
-	StatusError     = "error"
-	StatusAborted   = "aborted"
-	StatusDeleted   = "deleted"
+	TaskStatusActive    = "active"
+	TaskStatusCompleted = "completed"
+	TaskStatusError     = "error"
+	TaskStatusAborted   = "aborted"
+	TaskStatusDeleted   = "deleted"
+
+	InstanceStatusActive = "active"
+	InstanceStatusDone   = "done"
+	InstanceStatusError  = "error"
 
 	FormatFHIR = "FHIR"
 	FormatCCDA = "CCDA"
