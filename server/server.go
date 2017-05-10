@@ -6,9 +6,10 @@ import (
 	"strings"
 
 	"github.com/cjduffett/stork/api"
+	"github.com/cjduffett/stork/awsutil"
 	"github.com/cjduffett/stork/config"
+	"github.com/cjduffett/stork/db"
 	"github.com/cjduffett/stork/logger"
-	"github.com/cjduffett/stork/site"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/mgo.v2"
 )
@@ -53,9 +54,17 @@ func (s *StorkServer) Run() {
 	s.Session = session.Clone()
 	logger.Info("Connected to MongoDB at " + s.Config.DatabaseHost)
 
+	// Register middleware (CORS, etc.)
 	RegisterMiddleware(s.Engine)
-	api.RegisterRoutes(s.Engine, s.Session, s.Config)
-	site.RegisterSite(s.Engine, s.Session, s.Config)
+
+	// Create a new Data Access Layer
+	dal := db.NewDataAccessLayer(s.Session, s.Config.DatabaseName)
+
+	// Create a new AWSClient
+	awsClient := awsutil.NewAWSClient(s.Config)
+
+	// Register API routes and setup controllers
+	api.RegisterRoutes(s.Engine, dal, awsClient)
 
 	// Start Stork
 	logger.Info("Starting Stork on port " + strings.TrimPrefix(s.Config.ServerPort, ":"))

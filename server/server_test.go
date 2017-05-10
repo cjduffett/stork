@@ -1,11 +1,13 @@
 package server
 
 import (
-	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/cjduffett/stork/api"
+	"github.com/cjduffett/stork/awsutil"
 	"github.com/cjduffett/stork/config"
+	"github.com/cjduffett/stork/db"
 	"github.com/cjduffett/stork/testutil"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/suite"
@@ -28,11 +30,23 @@ func (s *ServerTestSuite) SetupSuite() {
 	config := config.DefaultConfig
 	config.DatabaseName = "stork-test"
 	storkServer := NewServer(config)
+
+	// Create a mock MongoDB connection
 	storkServer.Session = s.DB().Session
 
-	// Just testing the middleware in this package. For API and site tests, see the
-	// "api" and "site" packages, respectively.
+	// Register middleware (CORS, etc.)
 	RegisterMiddleware(storkServer.Engine)
+
+	// Create a new Data Access Layer
+	dal := db.NewDataAccessLayer(storkServer.Session, config.DatabaseName)
+
+	// Create a new AWSClient
+	awsClient := awsutil.NewAWSClient(config)
+
+	// Register API routes and setup controllers
+	api.RegisterRoutes(storkServer.Engine, dal, awsClient)
+
+	// Start the httptest server
 	s.StorkServer = httptest.NewServer(storkServer.Engine)
 }
 
@@ -41,32 +55,4 @@ func (s *ServerTestSuite) TearDownSuite() {
 	// Clean up and remove all temporary files from the mocked database.
 	// See testutil/mongo_suite.go for more.
 	s.TearDownDBServer()
-}
-
-func (s *ServerTestSuite) TearDownTest() {
-	// Cleanup any saved merge states.
-	s.DB().C("foo").DropCollection()
-}
-
-func (s *ServerTestSuite) TestRedirectMiddleware() {
-
-	// Configure the http client so it doesn't follow redirects
-	client := &http.Client{
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			return http.ErrUseLastResponse
-		},
-	}
-
-	// The root endpoint and /stork should both redirect to /stork/ui
-	resp, err := client.Get(s.StorkServer.URL)
-	s.NoError(err)
-	s.Equal(http.StatusPermanentRedirect, resp.StatusCode)
-	loc := resp.Header.Get("Location")
-	s.Equal("/stork/ui", loc)
-
-	resp, err = client.Get(s.StorkServer.URL + "/stork")
-	s.NoError(err)
-	s.Equal(http.StatusPermanentRedirect, resp.StatusCode)
-	loc = resp.Header.Get("Location")
-	s.Equal("/stork/ui", loc)
 }
