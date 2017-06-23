@@ -28,3 +28,6 @@ stork
 
 # Dependencies
 vendor/**
+
+# AWS creds
+CREDENTIALS

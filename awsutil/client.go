@@ -131,12 +131,15 @@ func (s *AWSClient) StartInstances(n int64, iConfig *InstanceConfig) ([]string, 
 
 	logger.Debug(fmt.Sprintf("Starting %d instances of Synthea for task %s", n, iConfig.TaskID))
 
+	// Additional configuration comes from the server's settings
+	iConfig.DoneEndpoint = s.Config.DoneEndpoint
+
 	// The InstanceConfig must be validated before doing anything.
 	if !ValidateConfig(iConfig, s.Config) {
 		return nil, errors.New("Invalid InstanceConfig")
 	}
 
-	// Serialie the InstanceConfig to pass it as UserData.
+	// Serialize the InstanceConfig to pass it as UserData.
 	rawUserData, err := json.Marshal(iConfig)
 	if err != nil {
 		return nil, err
@@ -162,6 +165,7 @@ func (s *AWSClient) StartInstances(n int64, iConfig *InstanceConfig) ([]string, 
 	}
 	reservation, err := s.EC2.RunInstances(runParams)
 	if err != nil {
+		logger.Error(err)
 		logger.Error("Failed to start instances for task " + iConfig.TaskID)
 		return nil, err
 	}
@@ -194,6 +198,7 @@ func (s *AWSClient) StartInstances(n int64, iConfig *InstanceConfig) ([]string, 
 	}
 	_, err = s.EC2.CreateTags(tagParams)
 	if err != nil {
+		logger.Error(err)
 		logger.Error(fmt.Sprintf("Failed to tag instances %v", strInstanceIDs))
 		return nil, err
 	}

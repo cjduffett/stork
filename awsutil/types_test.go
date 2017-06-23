@@ -25,7 +25,6 @@ func (t *TypesTestSuite) TestValidateInstanceConfig() {
 		TaskID:       "123abc",
 		Population:   sConfig.MinPopulationSize + 100,
 		BucketName:   "123abc-bucket",
-		BucketRegion: "us-east-1",
 		DoneEndpoint: "https://stork.com/tasks/:id/done",
 	}
 	t.True(ValidateConfig(iConfig, sConfig))

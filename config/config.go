@@ -16,7 +16,7 @@ var DefaultConfig = &StorkConfig{
 	SyntheaInstanceType:    "t2.micro",
 	SyntheaSecurityGroupID: "",
 	SyntheaRoleArn:         "",
-	SyntheaSubnetID:        "",
+	SyntheaSubnetID:        "subnet-581c7275",
 
 	MinPopulationSize: 500,
 	DoneEndpoint:      "/task/:id/done",
